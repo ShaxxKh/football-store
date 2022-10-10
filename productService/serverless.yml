@@ -23,7 +23,7 @@ configValidationMode: error
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   stage: dev
   region: eu-west-1
 
@@ -59,12 +59,23 @@ provider:
 
 functions:
   getProductsList:
-    handler: handler.getProductsList
+    handler: handlers/getProductsListHandler.getProductsList
     events:
       - http:
           path: /products
           method: get
           cors: true
+  getProductsById:
+    handler: handlers/getProductsByIdHandler.getProductsById
+    events:
+      - http:
+          path: /products/{id}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: false
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

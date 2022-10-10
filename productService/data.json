@@ -1,9 +1,0 @@
-{
-  "products": [
-    { "price": 100, "club": "Barcelona", "player": "Messi", "number": 10 },
-    { "price": 100, "club": "Barcelona", "player": "Neymar", "number": 11 },
-    { "price": 100, "club": "Barcelona", "player": "Suarez", "number": 9 },
-    { "price": 100, "club": "Barcelona", "player": "Iniesta", "number": 8 },
-    { "price": 1, "club": "Barcelona", "player": "John", "number": 99 }
-  ]
-}
