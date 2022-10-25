@@ -12,9 +12,7 @@ const getProductsList = async (event: APIGatewayProxyEvent) => {
   const products = result.rows;
   await client.end();
 
-  return formatJSONResponse({
-    products,
-  });
+  return formatJSONResponse(products);
 };
 
 export const main = middyfy(getProductsList);

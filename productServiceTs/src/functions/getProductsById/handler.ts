@@ -44,9 +44,7 @@ const getProductsById = async (event: APIGatewayProxyEvent) => {
     );
   }
 
-  return formatJSONResponse({
-    product,
-  });
+  return formatJSONResponse(product);
 };
 
 export const main = middyfy(getProductsById);
