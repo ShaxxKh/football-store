@@ -1,17 +1,16 @@
-import type { ValidatedEventAPIGatewayProxyEvent } from "@libs/api-gateway";
 import { formatJSONResponse } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
-import { products } from "../../data";
-import schema from "./schema";
+import { db } from "src/db";
+import checkUUID from "src/utils/checkUUID";
+import Product from "src/types/product";
+import { APIGatewayProxyEvent } from "aws-lambda";
 
-const getProductsById: ValidatedEventAPIGatewayProxyEvent<
-  typeof schema
-> = async (event) => {
+const getProductsById = async (event: APIGatewayProxyEvent) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
   const { pathParameters } = event;
-  const productId = Number(pathParameters.id);
+  const productId = pathParameters.id;
 
-  if (!productId) {
+  if (!productId || !checkUUID(productId)) {
     return formatJSONResponse(
       {
         message: "Product id was not provided or of a wrong type",
@@ -20,7 +19,21 @@ const getProductsById: ValidatedEventAPIGatewayProxyEvent<
     );
   }
 
-  const product = await products.find((product) => product.id === productId);
+  const client = await db();
+
+  const findOneQuery = `SELECT p.*, s.count
+  FROM products p
+  JOIN stocks s
+  ON p.id = s.product_id
+  WHERE id = $1`;
+
+  const result = await client.query<Product>(findOneQuery, [productId]);
+  const product = result.rows[0];
+
+  await client.end();
+
+  console.log(`PRODUCT: ${product}`);
+  console.log(`PRODUCT: ${JSON.stringify(product)}`);
 
   if (!product) {
     return formatJSONResponse(
@@ -31,9 +44,7 @@ const getProductsById: ValidatedEventAPIGatewayProxyEvent<
     );
   }
 
-  return formatJSONResponse({
-    product,
-  });
+  return formatJSONResponse(product);
 };
 
 export const main = middyfy(getProductsById);
